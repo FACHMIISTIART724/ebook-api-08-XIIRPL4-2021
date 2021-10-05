@@ -8,12 +8,11 @@ class AuthController extends Controller
 {
     public function me(){
         return[
-            'Status' => '200',
-            'Message' => 'Success',
-            'Nama' => 'Fahmi Istiartono',
-            'Kelas' => 'XII RPL 4',
-            'Absen' => '08',
-            'TTL' => 'Tegal, 07 Januari 2004'
+            'NIS' => '3103119112',
+            'Nama' => ' Fachmi Istiartono',
+            'Gender' => 'LAKI - LAKI',
+            'Phone' => '081216193440',
+            'Class' => 'XII RPL 4',
         ];
     }
 }
