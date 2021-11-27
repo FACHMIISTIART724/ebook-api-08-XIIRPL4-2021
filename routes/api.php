@@ -2,8 +2,12 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\AuthorController;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,12 +20,33 @@ use App\Http\Controllers\AuthorController;
 |
 */
 
+Route::get('/me', [AuthController::class, 'me']);
 Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+  return $request->user();
 });
-Route::get('/ebook','App\Http\Controllers\BookController@index');
-Route::post('/ebook', 'App\Http\Controllers\BookController@create');
-Route::put('/ebook/{id}', 'App\Http\Controllers\BookController@update');
-Route::delete('/ebook/{id}', 'App\Http\Controllers\BookController@delete');
-Route::get('/me', 'App\Http\Controllers\AuthController@me');
-Route::resource('author', AuthorController::class);
+
+//  login register
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+/* Authors Books*/
+// public
+Route::get('/books', [BookController::class, 'index']);
+Route::get('/books/{id}', [BookController::class, 'show']);
+Route::get('/books/search/{title}', [BookController::class, 'search']);
+
+Route::get('/authors', [AuthorController::class, 'index']);
+Route::get('/authors/{id}', [AuthorController::class, 'show']);
+Route::get('/authors/search/{name}', [AuthorController::class, 'search']);
+
+// protected
+Route::middleware(['auth:sanctum'])->group(function () {
+  Route::post('/books', [BookController::class, 'store']);
+  Route::put('/books/{id}', [BookController::class, 'update']);
+  Route::delete('/books/{id}', [BookController::class, 'destroy']);
+
+  Route::post('/authors', [AuthorController::class, 'store']);
+  Route::put('/authors/{id}', [AuthorController::class, 'update']);
+  Route::delete('/authors/{id}', [AuthorController::class, 'destroy']);
+  Route::post('/logout', [AuthController::class, 'logout']);
+});

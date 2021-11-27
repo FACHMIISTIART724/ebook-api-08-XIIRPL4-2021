@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Author;
+
 class AuthorController extends Controller
 {
     /**
@@ -13,24 +14,21 @@ class AuthorController extends Controller
      */
     public function index()
     {
-        $author = Author::all();
-
-       if($author->count() == 0){
-        return [
-            'status' => 404,
-            'message' => 'No Data'
-           ];
-       }else{
-         return [
-
-            'status' => 200,
-            'message' => 'loaded',
-            'data' => $author
-          ];
-       }
+        return response()->json([
+            "message" => "Daftar Author",
+            "data" => Author::all()
+        ]);
     }
 
-
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -40,24 +38,15 @@ class AuthorController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-
-            'name' => 'required',
-            'date_of_birth' => 'required',
-            'place_of_birth' => 'required',
-            'gender' => 'required',
-            'email' => 'required',
-            'hp' => 'required'
-
-        ]);
-
-        Author::create($request->all());
-        $data = Author::all()->last();
-        return [
-            'status'  => 200,
-            'message' => 'created',
-            'data' => $data
-        ];
+        $author = new Author();
+        $author->name = $request->name;
+        $author->date_of_birth = $request->date_of_birth;
+        $author->place_of_birth = $request->place_of_birth;
+        $author->gender = $request->gender;
+        $author->email = $request->email;
+        $author->hp = $request->hp;
+        $author->save();
+        return response()->json($author, 202);
     }
 
     /**
@@ -69,14 +58,7 @@ class AuthorController extends Controller
     public function show($id)
     {
         $author = Author::find($id);
-        $data = $author->first();
-        if($author){
-            return [
-                'status' => '200',
-                'message' => 'success',
-                'data' => $data
-            ];
-        }
+        return response()->json($author);
     }
 
     /**
@@ -99,33 +81,15 @@ class AuthorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-
-
-            'name' => 'required',
-            'date_of_birth' => 'required',
-            'place_of_birth' => 'required',
-            'gender' => 'required',
-            'email' => 'required',
-            'hp' => 'required'
-
-        ]);
         $author = Author::find($id);
-        $author->update($request->all());
-        $data = Author::latest('updated_at')->first();
-        if($author){
-            return [
-                'status' => 200,
-                'message' => 'Data Edited Successfully',
-                'data' => $data
-            ];
-        }else{
-            return [
-            'status' => '404',
-            'message' => 'not found'
-            ];
-
-        };
+        $author->name = $request->name;
+        $author->date_of_birth = $request->date_of_birth;
+        $author->place_of_birth = $request->place_of_birth;
+        $author->gender = $request->gender;
+        $author->email = $request->email;
+        $author->hp = $request->hp;
+        $author->save();
+        return response()->json($author, 202);
     }
 
     /**
@@ -136,19 +100,15 @@ class AuthorController extends Controller
      */
     public function destroy($id)
     {
-        $author = Author::find($id);
+        $author = Author::findOrFail($id);
         $author->delete();
-        if($author){
-            return[
-                'status' => 200,
-                'message' => 'data deleted'
+        return response()->json([
+            "message" => "Data Author Telah dihapus",
+            "data" => $author
+        ]);
+    }
 
-            ];
-        } else{
-            return[
-                'status' => 404,
-                'message' => 'not found'
-            ];
-        }
+    public function search($name){
+        return Author::where('name', 'like', '%'.$name.'%')->get();
     }
 }
